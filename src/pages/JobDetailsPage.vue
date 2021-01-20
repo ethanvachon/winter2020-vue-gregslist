@@ -1,7 +1,15 @@
 <template>
   <div class="car-details">
-    <img v-if="state.loaded" :src="car.imgUrl" alt="" />
-    <h1 v-else>Loading...</h1>
+    <div v-if="state.loaded">
+      <h4>
+        {{ job.company }} | {{ job.jobTitle }}
+      </h4>
+      <h5>{{ job.hours }} at {{ job.rate }} an hour</h5>
+      <p>{{ job.description }}</p>
+    </div>
+    <div v-else>
+      <h1>Loading...</h1>
+    </div>
   </div>
 </template>
 
@@ -9,33 +17,29 @@
 import { computed, onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { AppState } from '../AppState'
-import { carsService } from '../services/CarsService'
-// IMPORTANT REVIEW
+import { jobsService } from '../services/JobsService'
 export default {
   setup() {
     const route = useRoute()
     const state = reactive({
       loaded: false
     })
-    // onBeforeRouteLeave(() => {
-    //   AppState.activeCar = {}
-    // })
     onMounted(async () => {
       try {
-        await carsService.getOne(route.params.id)
+        await jobsService.getOne(route.params.id)
       } catch (error) {
         console.error(error)
-      } finally {
-        state.loaded = true
       }
+      state.loaded = true
     })
     return {
       state,
-      car: computed(() => AppState.activeCar)
+      job: computed(() => AppState.activeJob)
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
+
 </style>
